@@ -38,17 +38,14 @@ class View(tk.Frame, Observer):
         self.restart_button.grid(column=0, row=2, padx=10, pady=10)
 
     def _click(self, i):
-        print(i)
         if self.controller:
             self.controller.click(i)
 
     def _restart(self):
-        print('restart')
         if self.controller:
             self.controller.restart()
 
     def update_(self):
-        print('update')
         if self.controller:
             self.controller.update()
 
@@ -67,11 +64,11 @@ class GridView(tk.Canvas):
         canvas_height = square_width * n_rows
         super().__init__(master, width=canvas_width, height=canvas_height, bg="blue", highlightthickness=0)
 
-        self._board = self._create_board(n_rows, n_columns, square_width)
+        self._board = self._create_grid(n_rows, n_columns, square_width)
         self._create_frame(canvas_width, canvas_height)
 
-    def _create_board(self, n_rows, n_columns, square_width):
-        board = []
+    def _create_grid(self, n_rows, n_columns, square_width):
+        grid = []
         for i in range(n_columns):
             column = []
             for j in range(n_rows):
@@ -80,8 +77,8 @@ class GridView(tk.Canvas):
                 x1 = x0 + square_width
                 y1 = y0 + square_width
                 column.append(GridCircle(self, x0, y0, x1, y1))
-            board.append(column)
-        return board
+            grid.append(column)
+        return grid
 
     def _create_frame(self, width, height):
         self.create_rectangle(0, 0, width, height, width=10, outline="dark blue")
