@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 from abc import ABC, abstractmethod
 
 
@@ -25,7 +24,7 @@ class View(tk.Frame, Observer):
         for i in range(n_columns):
             for j in range(n_rows):
                 self.grid_view.get(i, j).bind(
-                    "<Button-1>", lambda event, x=i: self._click(x)
+                    "<Button-1>", lambda event, x=i, y=j: self._click(x, y)
                 )
         self.restart_button = tk.Button(self, text="Restart", command=self._restart)
 
@@ -37,9 +36,9 @@ class View(tk.Frame, Observer):
         self.grid_view.grid(column=0, row=1, padx=10, pady=10)
         self.restart_button.grid(column=0, row=2, padx=10, pady=10)
 
-    def _click(self, i):
+    def _click(self, i, j):
         if self.controller:
-            self.controller.click(i)
+            self.controller.click(i, j)
 
     def _restart(self):
         if self.controller:
@@ -71,7 +70,7 @@ class GridView(tk.Canvas):
         grid = []
         for i in range(n_columns):
             column = []
-            for j in range(n_rows):
+            for j in reversed(range(n_rows)):
                 x0 = i * square_width
                 y0 = j * square_width
                 x1 = x0 + square_width
