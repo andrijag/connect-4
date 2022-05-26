@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class ControllerStrategy(ABC):
     @abstractmethod
-    def click(self, i, j):
+    def click(self, i):
         pass
 
     @abstractmethod
@@ -24,7 +24,7 @@ class Controller(ControllerStrategy):
             player.id_: view.colors[i] for i, player in enumerate(model.players)
         }
 
-    def click(self, i, j):
+    def click(self, i):
         self.model.drop(i)
 
     def restart(self):
