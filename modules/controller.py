@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class ControllerStrategy(ABC):
     @abstractmethod
-    def click(self, i):
+    def click(self, i, j):
         pass
 
     @abstractmethod
@@ -16,7 +16,7 @@ class ControllerStrategy(ABC):
 
 
 class Controller(ControllerStrategy):
-    def __init__(self, model, view, bots=None):
+    def __init__(self, model, view):
         self.model = model
         self.view = view
 
@@ -24,7 +24,7 @@ class Controller(ControllerStrategy):
             player.id_: view.colors[i] for i, player in enumerate(model.players)
         }
 
-    def click(self, i):
+    def click(self, i, j):
         self.model.drop(i)
 
     def restart(self):
@@ -39,12 +39,12 @@ class Controller(ControllerStrategy):
         self.view.score.update_(score)
 
     def _get_score(self):
-        return " : ".join(str(player.score) for player in self.model.players)
+        return " / ".join(str(player.score) for player in self.model.players)
 
     def _update_board(self):
-        for i in range(self.model.board.n_rows):
-            for j in range(self.model.board.n_columns):
-                grid_circle = self.view.board.get(i, j)
-                value = self.model.board[i][j]
+        for i in range(self.model.grid.n_columns):
+            for j in range(self.model.grid.n_rows):
+                grid_circle = self.view.grid_view.get(i, j)
+                value = self.model.grid[i][j]
                 token = self.player_color.get(value, None)
                 grid_circle.update(token)
