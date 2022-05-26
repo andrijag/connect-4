@@ -20,10 +20,10 @@ class Game(Subject):
     def __init__(self, n_rows, n_columns, connect_n, n_players=2):
         self.players = [Player(i) for i in range(1, n_players + 1)]
         self._iterator = cycle(self.players)
-        self.player = next(self._iterator)
+        self._player = next(self._iterator)
         self.grid = Grid(n_rows, n_columns)
         self._validator = Validator(self.grid, connect_n)
-        self.game_over = False
+        self._game_over = False
         self._observers = []
 
     def attach_observer(self, observer):
@@ -38,7 +38,7 @@ class Game(Subject):
 
     def drop(self, i):
         if self._legal_move(i):
-            self.player.drop(self.grid, i)
+            self._player.drop(self.grid, i)
             if self._winning_move(i):
                 self._end_game()
             else:
@@ -46,7 +46,7 @@ class Game(Subject):
             self.notify_observers()
 
     def _legal_move(self, i):
-        return not self.game_over and not self.grid[i][-1]
+        return not self._game_over and not self.grid[i][-1]
 
     def _winning_move(self, i):
         for j in reversed(range(self.grid.n_rows)):
@@ -54,17 +54,17 @@ class Game(Subject):
                 return self._validator.check(i, j)
 
     def _end_game(self):
-        self.game_over = True
-        self.player.score += 1
+        self._game_over = True
+        self._player.score += 1
 
     def _next_turn(self):
-        self.player = next(self._iterator)
+        self._player = next(self._iterator)
 
     def restart(self):
         self._iterator = cycle(self.players)
-        self.player = next(self._iterator)
+        self._player = next(self._iterator)
         self.grid.reset()
-        self.game_over = False
+        self._game_over = False
         self.notify_observers()
 
 
