@@ -46,5 +46,8 @@ class Controller(ControllerStrategy):
             for j in range(self.model.grid.n_rows):
                 grid_circle = self.view.grid_view.get(i, j)
                 value = self.model.grid[i][j]
-                token = self.player_color.get(value, None)
-                grid_circle.update(token)
+                if value:
+                    token = self.player_color[value]
+                    grid_circle.update(token)
+                else:
+                    grid_circle.reset()

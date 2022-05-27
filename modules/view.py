@@ -103,10 +103,10 @@ class GridCircle:
         self.canvas.tag_bind(self.id_, event, command)
 
     def update(self, color):
-        if color:
-            self._fill(color)
-        else:
-            self._fill("blue")
+        self._fill(color)
+
+    def reset(self):
+        self._fill("blue")
 
     def _fill(self, color):
         self.canvas.itemconfigure(self.id_, fill=color)
