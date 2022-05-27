@@ -32,7 +32,7 @@ class Controller(ControllerStrategy):
 
     def update(self):
         self._update_score()
-        self._update_board()
+        self._update_grid()
 
     def _update_score(self):
         score = self._get_score()
@@ -41,7 +41,7 @@ class Controller(ControllerStrategy):
     def _get_score(self):
         return " / ".join(str(player.score) for player in self.model.players)
 
-    def _update_board(self):
+    def _update_grid(self):
         for i in range(self.model.grid.n_columns):
             for j in range(self.model.grid.n_rows):
                 grid_circle = self.view.grid_view.get(i, j)
