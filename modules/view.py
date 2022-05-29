@@ -10,7 +10,7 @@ class Observer(ABC):
 
 class View(tk.Frame, Observer):
     def __init__(self, parent, n_rows, n_columns):
-        super().__init__(parent, background="blue")
+        super().__init__(parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
@@ -26,11 +26,21 @@ class View(tk.Frame, Observer):
                 self.grid_view.get(i, j).bind(
                     "<Button-1>", lambda event, x=i: self._click(x)
                 )
-        self.restart_button = Button(self, "Restart", self._restart)
+        self.restart_button = tk.Button(self, text="Restart", command=self._restart)
 
         self.score.grid(column=0, row=0, padx=10, pady=10)
         self.grid_view.grid(column=0, row=1, padx=10, pady=10)
         self.restart_button.grid(column=0, row=2, padx=10, pady=10)
+
+        self.configure(background="blue")
+        self.score.configure(bg="blue", fg="white")
+        self.restart_button.configure(
+            bg="blue",
+            fg="white",
+            activebackground="blue",
+            activeforeground="white",
+            highlightthickness=0,
+        )
 
     def _click(self, i):
         if self.controller:
@@ -47,7 +57,7 @@ class View(tk.Frame, Observer):
 
 class ScoreBoard(tk.Label):
     def __init__(self, master):
-        super().__init__(master, text="score", bg="blue", fg="white")
+        super().__init__(master, text="score")
 
     def update_(self, score):
         self.configure(text=score)
@@ -110,17 +120,3 @@ class GridCircle:
 
     def _fill(self, color):
         self.canvas.itemconfigure(self.id_, fill=color)
-
-
-class Button(tk.Button):
-    def __init__(self, master, text, command):
-        super().__init__(
-            master,
-            text=text,
-            command=command,
-            bg="blue",
-            fg="white",
-            activebackground="blue",
-            activeforeground="white",
-            highlightthickness=0,
-        )
