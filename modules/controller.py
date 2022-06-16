@@ -17,18 +17,18 @@ class ControllerStrategy(ABC):
 
 class Controller(ControllerStrategy):
     def __init__(self, model, view):
-        self.model = model
-        self.view = view
+        self._model = model
+        self._view = view
 
-        self.player_color = {
+        self._player_color = {
             player.id_: view.colors[i] for i, player in enumerate(model.players)
         }
 
     def click(self, i):
-        self.model.drop(i)
+        self._model.drop(i)
 
     def restart(self):
-        self.model.restart()
+        self._model.restart()
 
     def update(self):
         self._update_score()
@@ -36,18 +36,18 @@ class Controller(ControllerStrategy):
 
     def _update_score(self):
         score = self._get_score()
-        self.view.score.update_(score)
+        self._view.score.update_(score)
 
     def _get_score(self):
-        return " / ".join(str(player.score) for player in self.model.players)
+        return " / ".join(str(player.score) for player in self._model.players)
 
     def _update_grid(self):
-        for i in range(self.model.grid.n_columns):
-            for j in range(self.model.grid.n_rows):
-                grid_circle = self.view.grid_view.get(i, j)
-                value = self.model.grid[i][j]
+        for i in range(self._model.grid.n_columns):
+            for j in range(self._model.grid.n_rows):
+                grid_circle = self._view.grid_view.get(i, j)
+                value = self._model.grid[i][j]
                 if value:
-                    token = self.player_color[value]
+                    token = self._player_color[value]
                     grid_circle.update(token)
                 else:
                     grid_circle.reset()

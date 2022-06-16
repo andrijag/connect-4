@@ -26,15 +26,15 @@ class View(tk.Frame, Observer):
                 self.grid_view.get(i, j).bind(
                     "<Button-1>", lambda event, x=i: self._click(x)
                 )
-        self.restart_button = tk.Button(self, text="Restart", command=self._restart)
+        restart_button = tk.Button(self, text="Restart", command=self._restart)
 
         self.score.grid(column=0, row=0, padx=10, pady=10)
         self.grid_view.grid(column=0, row=1, padx=10, pady=10)
-        self.restart_button.grid(column=0, row=2, padx=10, pady=10)
+        restart_button.grid(column=0, row=2, padx=10, pady=10)
 
         self.configure(background="blue")
         self.score.configure(bg="blue", fg="white")
-        self.restart_button.configure(
+        restart_button.configure(
             bg="blue",
             fg="white",
             activebackground="blue",
@@ -100,17 +100,17 @@ class GridView(tk.Canvas):
 
 class GridCircle:
     def __init__(self, canvas, x0, y0, x1, y1, ipad=10):
-        self.canvas = canvas
+        self._canvas = canvas
         x0 = x0 + ipad
         y0 = y0 + ipad
         x1 = x1 - ipad
         y1 = y1 - ipad
-        self.id_ = canvas.create_oval(
+        self._id = canvas.create_oval(
             x0, y0, x1, y1, width=5, fill="blue", outline="dark blue"
         )
 
     def bind(self, event, command):
-        self.canvas.tag_bind(self.id_, event, command)
+        self._canvas.tag_bind(self._id, event, command)
 
     def update(self, color):
         self._fill(color)
@@ -119,4 +119,4 @@ class GridCircle:
         self._fill("blue")
 
     def _fill(self, color):
-        self.canvas.itemconfigure(self.id_, fill=color)
+        self._canvas.itemconfigure(self._id, fill=color)
