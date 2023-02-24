@@ -28,12 +28,13 @@ class Game(Subject):
 
     def drop(self, i):
         if self._legal_move(i):
-            self._player.drop(self.grid, i)
-            if self._winning_move(i):
-                self._end_game()
-            else:
-                self._next_turn()
-            self.notify_observers()
+            return
+        self._player.drop(self.grid, i)
+        if self._winning_move(i):
+            self._end_game()
+        else:
+            self._next_turn()
+        self.notify_observers()
 
     def _legal_move(self, i):
         return not self._game_over and not self.grid[i][-1]
