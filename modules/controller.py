@@ -42,8 +42,8 @@ class Controller(ControllerStrategy):
         return " / ".join(str(player.score) for player in self._model.players)
 
     def _update_grid(self):
-        for i in range(self._model.grid.n_columns):
-            for j in range(self._model.grid.n_rows):
+        for i in range(self._model.n_columns):
+            for j in range(self._model.n_rows):
                 grid_circle = self._view.grid_view.get(i, j)
                 value = self._model.grid[i][j]
                 if value:
