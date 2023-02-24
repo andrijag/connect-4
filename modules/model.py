@@ -1,29 +1,8 @@
-from abc import ABC, abstractmethod
 from itertools import cycle
 
 
-class Subject(ABC):
-    @abstractmethod
-    def attach_observer(self, observer):
-        pass
-
-    @abstractmethod
-    def detach_observer(self, observer):
-        pass
-
-    @abstractmethod
-    def notify_observers(self):
-        pass
-
-
-class Game(Subject):
-    def __init__(self, n_rows, n_columns, connect_n, n_players=2):
-        self.players = [Player(i) for i in range(1, n_players + 1)]
-        self._iterator = cycle(self.players)
-        self._player = next(self._iterator)
-        self.grid = Grid(n_rows, n_columns)
-        self._validator = Validator(self.grid, connect_n)
-        self._game_over = False
+class Subject:
+    def __init__(self):
         self._observers = []
 
     def attach_observer(self, observer):
@@ -35,6 +14,17 @@ class Game(Subject):
     def notify_observers(self):
         for observer in self._observers:
             observer.update_()
+
+
+class Game(Subject):
+    def __init__(self, n_rows, n_columns, connect_n, n_players=2):
+        super().__init__()
+        self.players = [Player(i) for i in range(1, n_players + 1)]
+        self._iterator = cycle(self.players)
+        self._player = next(self._iterator)
+        self.grid = Grid(n_rows, n_columns)
+        self._validator = Validator(self.grid, connect_n)
+        self._game_over = False
 
     def drop(self, i):
         if self._legal_move(i):
