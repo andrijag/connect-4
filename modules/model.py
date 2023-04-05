@@ -92,32 +92,32 @@ class Grid:
                 return
 
 
-class Utils:
-    vectors = {
-        "horizontal": (0, 1),
-        "vertical": (1, 0),
-        "diagonal": (1, 1),
-        "anti-diagonal": (-1, 1),
-    }
+class Evaluator:
+    def __init__(self, board, connect_n):
+        self._board = board
+        self._connect_n = connect_n
+        self._vectors = {
+            "horizontal": (0, 1),
+            "vertical": (1, 0),
+            "diagonal": (1, 1),
+            "anti-diagonal": (-1, 1),
+        }
 
-    @staticmethod
-    def check(grid, i, j, connect_n):
-        for di, dj in Utils.vectors.values():
-            if Utils._count_in_direction(grid, i, j, di, dj) >= connect_n:
+    def check(self, i, j):
+        for di, dj in self._vectors.values():
+            if self._count_in_direction(i, j, di, dj) >= self._connect_n:
                 return True
 
-    @staticmethod
-    def _count_in_direction(grid, i, j, di, dj):
-        direction = Utils._count_consecutive(grid, i, j, di, dj)
-        opposite_direction = Utils._count_consecutive(grid, i, j, -di, -dj)
+    def _count_in_direction(self, i, j, di, dj):
+        direction = self._count_consecutive(i, j, di, dj)
+        opposite_direction = self._count_consecutive(i, j, -di, -dj)
         return direction + opposite_direction - 1
 
-    @staticmethod
-    def _count_consecutive(grid, i, j, di, dj):
+    def _count_consecutive(self, i, j, di, dj):
         if (
-            i + di in range(grid.n_columns)
-            and j + dj in range(grid.n_rows)
-            and grid[i][j] == grid[i + di][j + dj]
+            i + di in range(self._board.n_rows)
+            and j + dj in range(self._board.n_columns)
+            and self._board[i][j] == self._board[i + di][j + dj]
         ):
-            return 1 + Utils._count_consecutive(grid, i + di, j + dj, di, dj)
+            return 1 + self._count_consecutive(i + di, j + dj, di, dj)
         return 1
