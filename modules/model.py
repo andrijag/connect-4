@@ -26,6 +26,7 @@ class Game(Subject):
         self._iterator = cycle(self.players)
         self._player = next(self._iterator)
         self.grid = Grid(n_rows, n_columns)
+        self._evaluator = Evaluator(self.grid, connect_n)
         self._game_over = False
 
     def drop(self, i):
@@ -44,7 +45,7 @@ class Game(Subject):
     def _winning_move(self, i):
         for j in reversed(range(self.grid.n_rows)):
             if self.grid[i][j]:
-                return Utils.check(self.grid, i, j, self.connect_n)
+                return self._evaluator.check(i, j)
 
     def _end_game(self):
         self._game_over = True
@@ -93,8 +94,8 @@ class Grid:
 
 
 class Evaluator:
-    def __init__(self, board, connect_n):
-        self._board = board
+    def __init__(self, grid, connect_n):
+        self._grid = grid
         self._connect_n = connect_n
         self._vectors = {
             "horizontal": (0, 1),
@@ -115,9 +116,9 @@ class Evaluator:
 
     def _count_consecutive(self, i, j, di, dj):
         if (
-            i + di in range(self._board.n_rows)
-            and j + dj in range(self._board.n_columns)
-            and self._board[i][j] == self._board[i + di][j + dj]
+            i + di in range(self._grid.n_rows)
+            and j + dj in range(self._grid.n_columns)
+            and self._grid[i][j] == self._grid[i + di][j + dj]
         ):
             return 1 + self._count_consecutive(i + di, j + dj, di, dj)
         return 1
