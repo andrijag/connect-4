@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class ControllerStrategy(ABC):
+class ResponseStrategy(ABC):
     @abstractmethod
     def click(self, i):
         pass
@@ -10,12 +10,14 @@ class ControllerStrategy(ABC):
     def restart(self):
         pass
 
+
+class UpdateStrategy(ABC):
     @abstractmethod
     def update(self):
         pass
 
 
-class Controller(ControllerStrategy):
+class Controller(ResponseStrategy, UpdateStrategy):
     def __init__(self, model, view):
         self._model = model
         self._view = view
