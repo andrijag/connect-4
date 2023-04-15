@@ -116,8 +116,8 @@ class Evaluator:
 
     def _count_consecutive(self, i, j, di, dj):
         if (
-            i + di in range(self._grid.n_rows)
-            and j + dj in range(self._grid.n_columns)
+            i + di in range(self._grid.n_columns)
+            and j + dj in range(self._grid.n_rows)
             and self._grid[i][j] == self._grid[i + di][j + dj]
         ):
             return 1 + self._count_consecutive(i + di, j + dj, di, dj)
