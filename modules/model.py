@@ -58,6 +58,7 @@ class Game(Subject):
         self._iterator = cycle(self.players)
         self._player = next(self._iterator)
         self.grid = Grid(self.n_rows, self.n_columns)
+        self._evaluator = Evaluator(self.grid, self.connect_n)
         self._game_over = False
         self.notify_observers()
 
