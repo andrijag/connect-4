@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 class Observer(ABC):
     @abstractmethod
-    def update_(self, subject):
+    def update_(self):
         pass
 
 
@@ -52,10 +52,9 @@ class View(tk.Frame, Observer):
     def _restart(self):
         self._model.restart()
 
-    def update_(self, subject):
-        if subject == self._model:
-            self._update_score()
-            self._update_grid()
+    def update_(self):
+        self._update_score()
+        self._update_grid()
 
     def _update_score(self):
         score = self._get_score()
