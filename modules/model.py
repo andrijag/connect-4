@@ -13,7 +13,7 @@ class Subject:
 
     def notify_observers(self):
         for observer in self._observers:
-            observer.update_()
+            observer.update_(self)
 
 
 class Game(Subject):
@@ -72,7 +72,7 @@ class Player:
         return f"player {self.id_}"
 
     def drop(self, grid, i):
-        grid.stack(i, self.id_)
+        grid.drop(i, self.id_)
 
 
 class Grid:
@@ -87,7 +87,7 @@ class Grid:
     def __str__(self):
         return str(self._matrix)
 
-    def stack(self, i, value):
+    def drop(self, i, value):
         for j in range(self.n_rows):
             if not self._matrix[i][j]:
                 self._matrix[i][j] = value

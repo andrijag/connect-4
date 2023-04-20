@@ -4,36 +4,40 @@ from abc import ABC, abstractmethod
 
 class Observer(ABC):
     @abstractmethod
-    def update_(self):
+    def update_(self, subject):
         pass
 
 
 class View(tk.Frame, Observer):
-    def __init__(self, parent, n_rows, n_columns):
+    def __init__(self, parent, model):
         super().__init__(parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=1)
 
-        self.controller = None
-        self.colors = ["red", "yellow"]
+        self._model = model
+        self._colors = ["red", "yellow"]
 
-        self.score = ScoreBoard(self)
-        self.grid_view = GridView(self, n_rows, n_columns)
-        for i in range(n_columns):
-            for j in range(n_rows):
-                self.grid_view.get(i, j).bind(
+        self._player_color = {
+            player.id_: self._colors[i] for i, player in enumerate(model.players)
+        }
+
+        self._score = ScoreBoard(self)
+        self._grid_view = GridView(self, model.n_rows, model.n_columns)
+        for i in range(model.n_columns):
+            for j in range(model.n_rows):
+                self._grid_view.get(i, j).bind(
                     "<Button-1>", lambda event, x=i: self._click(x)
                 )
         restart_button = tk.Button(self, text="Restart", command=self._restart)
 
-        self.score.grid(column=0, row=0, padx=10, pady=10)
-        self.grid_view.grid(column=0, row=1, padx=10, pady=10)
+        self._score.grid(column=0, row=0, padx=10, pady=10)
+        self._grid_view.grid(column=0, row=1, padx=10, pady=10)
         restart_button.grid(column=0, row=2, padx=10, pady=10)
 
         self.configure(background="blue")
-        self.score.configure(bg="blue", fg="white")
+        self._score.configure(bg="blue", fg="white")
         restart_button.configure(
             bg="blue",
             fg="white",
@@ -43,16 +47,33 @@ class View(tk.Frame, Observer):
         )
 
     def _click(self, i):
-        if self.controller:
-            self.controller.click(i)
+        self._model.drop(i)
 
     def _restart(self):
-        if self.controller:
-            self.controller.restart()
+        self._model.restart()
 
-    def update_(self):
-        if self.controller:
-            self.controller.update()
+    def update_(self, subject):
+        if subject == self._model:
+            self._update_score()
+            self._update_grid()
+
+    def _update_score(self):
+        score = self._get_score()
+        self._score.update_(score)
+
+    def _get_score(self):
+        return " / ".join(str(player.score) for player in self._model.players)
+
+    def _update_grid(self):
+        for i in range(self._model.n_columns):
+            for j in range(self._model.n_rows):
+                grid_circle = self._grid_view.get(i, j)
+                value = self._model.grid[i][j]
+                if value:
+                    token = self._player_color[value]
+                    grid_circle.update(token)
+                else:
+                    grid_circle.reset()
 
 
 class ScoreBoard(tk.Label):

@@ -1,7 +1,6 @@
 import tkinter as tk
 from .model import Game
 from .view import View
-from .controller import Controller
 
 N_ROWS = 6
 N_COLUMNS = 7
@@ -16,10 +15,7 @@ class Application(tk.Tk):
         self.rowconfigure(0, weight=1)
 
         model = Game(N_ROWS, N_COLUMNS, CONNECT_N)
-        view = View(self, N_ROWS, N_COLUMNS)
-        controller = Controller(model, view)
-
-        view.controller = controller
+        view = View(self, model)
 
         model.attach_observer(view)
         model.notify_observers()
