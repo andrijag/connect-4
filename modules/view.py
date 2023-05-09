@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from abc import ABC, abstractmethod
 
 
@@ -8,7 +9,7 @@ class Observer(ABC):
         pass
 
 
-class View(tk.Frame, Observer):
+class View(ttk.Frame, Observer):
     def __init__(self, parent, model):
         super().__init__(parent)
         self.columnconfigure(0, weight=1)
@@ -33,18 +34,8 @@ class View(tk.Frame, Observer):
         restart_button = tk.Button(self, text="Restart", command=self._restart)
 
         self._score.grid(column=0, row=0, padx=10, pady=10)
-        self._grid_view.grid(column=0, row=1, padx=10, pady=10)
+        self._grid_view.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
         restart_button.grid(column=0, row=2, padx=10, pady=10)
-
-        self.configure(background="blue")
-        self._score.configure(bg="blue", fg="white")
-        restart_button.configure(
-            bg="blue",
-            fg="white",
-            activebackground="blue",
-            activeforeground="white",
-            highlightthickness=0,
-        )
 
     def _click(self, i):
         self._model.drop(i)
@@ -75,7 +66,7 @@ class View(tk.Frame, Observer):
                     grid_circle.reset()
 
 
-class ScoreBoard(tk.Label):
+class ScoreBoard(ttk.Label):
     def __init__(self, master):
         super().__init__(master, text="score")
 
@@ -91,12 +82,22 @@ class GridView(tk.Canvas):
             master,
             width=canvas_width,
             height=canvas_height,
-            bg="medium blue",
-            highlightthickness=0,
+            highlightthickness=0
         )
 
-        self._board = self._create_grid(n_rows, n_columns, square_width)
+        self.bind("<Configure>", self._resize)
+
         self._create_frame(canvas_width, canvas_height)
+        self._board = self._create_grid(n_rows, n_columns, square_width)
+
+    def _resize(self, event):
+        width_ratio = event.width / self.winfo_reqwidth()
+        height_ratio = event.height / self.winfo_reqheight()
+        self.scale("all", 0, 0, width_ratio, height_ratio)
+        self.configure(width=event.width, height=event.height)
+
+    def _create_frame(self, width, height):
+        self.create_rectangle(0, 0, width, height, width=10, outline="dark blue", fill="medium blue")
 
     def _create_grid(self, n_rows, n_columns, square_width):
         grid = []
@@ -110,9 +111,6 @@ class GridView(tk.Canvas):
                 column.append(GridCircle(self, x0, y0, x1, y1))
             grid.append(column)
         return grid
-
-    def _create_frame(self, width, height):
-        self.create_rectangle(0, 0, width, height, width=10, outline="dark blue")
 
     def get(self, i, j):
         return self._board[i][j]
