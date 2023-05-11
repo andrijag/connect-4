@@ -24,7 +24,8 @@ class View(ttk.Frame, Observer):
             player.id_: self._colors[i] for i, player in enumerate(model.players)
         }
 
-        self._frame = Frame(self)
+        self._fixedAspectRatio = FixedAspectRatioDecorator(self, width=400, height=300, bg="red")
+        self._canvas = Canvas(self._fixedAspectRatio, width=400, height=300, bg="blue")
 
         self._score = ScoreBoard(self)
         self._grid_view = GridView(self, model.n_rows, model.n_columns)
@@ -35,7 +36,7 @@ class View(ttk.Frame, Observer):
                 )
         restart_button = tk.Button(self, text="Restart", command=self._restart)
 
-        self._frame.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+        self._fixedAspectRatio.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
 
         self._score.grid(column=0, row=0, padx=10, pady=10)
         # self._grid_view.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
@@ -78,36 +79,50 @@ class ScoreBoard(ttk.Label):
         self.configure(text=score)
 
 
-class Frame(tk.Frame):
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs, bg="red", width=400, height=300)
+class Decorator(ABC):
+    @abstractmethod
+    def resize(self, event):
+        pass
 
-        self.bind("<Configure>", self._resize)
 
-        self.aspect_ratio = 400 / 300
+class FixedAspectRatioDecorator(tk.Frame, Decorator):
+    def __init__(self, parent, *, width, height, **kwargs):
+        super().__init__(parent, width=width, height=height, **kwargs)
 
-        self._canvas = Canvas(self, width=400, height=300)
+        self.bind("<Configure>", self.resize)
 
-        self._canvas.place(width=400, height=300)
+        self.aspect_ratio = width / height
+        self._widget = None
+        self._widget = Canvas(self, width=width, height=height, bg="blue")
 
-    def _resize(self, event):
-        if event.width / event.height > self.aspect_ratio:
-            self._canvas.place(width=event.height * self.aspect_ratio, height=event.height)
-        else:
-            self._canvas.place(width=event.width, height=event.width / self.aspect_ratio)
+        self._widget.place(
+            width=width, height=height, anchor="center", x=width / 2, y=height / 2
+        )
+
+    def resize(self, event):
+        widget_width = min(event.height * self.aspect_ratio, event.width)
+        widget_height = min(event.height, event.width / self.aspect_ratio)
+        self._widget.place(
+            width=widget_width,
+            height=widget_height,
+            anchor="center",
+            x=event.width / 2,
+            y=event.height / 2,
+        )
         self.configure(width=event.width, height=event.height)
 
 
 class Canvas(tk.Canvas):
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs, bg="blue", highlightthickness=0)
+        super().__init__(parent, **kwargs, highlightthickness=0)
 
-        self.bind("<Configure>", self._resize)
+        self.bind("<Configure>", self.resize)
 
-        self.create_line(0, 0, kwargs["width"], kwargs["height"])
-        self.create_line(0, kwargs["height"], kwargs["width"], 0)
+        self.create_line(
+            0, kwargs["height"], kwargs["width"], 0, fill="yellow", width=10
+        )
 
-    def _resize(self, event):
+    def resize(self, event):
         width_ratio = event.width / float(self["width"])
         height_ratio = event.height / float(self["height"])
         self.scale("all", 0, 0, width_ratio, height_ratio)
@@ -119,10 +134,7 @@ class GridView(tk.Canvas):
         canvas_width = square_width * n_columns
         canvas_height = square_width * n_rows
         super().__init__(
-            master,
-            width=canvas_width,
-            height=canvas_height,
-            highlightthickness=0
+            master, width=canvas_width, height=canvas_height, highlightthickness=0
         )
 
         self.bind("<Configure>", self._resize)
@@ -137,7 +149,9 @@ class GridView(tk.Canvas):
         self.configure(width=event.width, height=event.height)
 
     def _create_frame(self, width, height):
-        self.create_rectangle(0, 0, width, height, width=10, outline="dark blue", fill="medium blue")
+        self.create_rectangle(
+            0, 0, width, height, width=10, outline="dark blue", fill="medium blue"
+        )
 
     def _create_grid(self, n_rows, n_columns, square_width):
         grid = []
