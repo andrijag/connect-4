@@ -24,6 +24,8 @@ class View(ttk.Frame, Observer):
             player.id_: self._colors[i] for i, player in enumerate(model.players)
         }
 
+        self._frame = Frame(self)
+
         self._score = ScoreBoard(self)
         self._grid_view = GridView(self, model.n_rows, model.n_columns)
         for i in range(model.n_columns):
@@ -33,8 +35,10 @@ class View(ttk.Frame, Observer):
                 )
         restart_button = tk.Button(self, text="Restart", command=self._restart)
 
+        self._frame.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+
         self._score.grid(column=0, row=0, padx=10, pady=10)
-        self._grid_view.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+        # self._grid_view.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
         restart_button.grid(column=0, row=2, padx=10, pady=10)
 
     def _click(self, i):
@@ -72,6 +76,42 @@ class ScoreBoard(ttk.Label):
 
     def update_(self, score):
         self.configure(text=score)
+
+
+class Frame(tk.Frame):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs, bg="red", width=400, height=300)
+
+        self.bind("<Configure>", self._resize)
+
+        self.aspect_ratio = 400 / 300
+
+        self._canvas = Canvas(self, width=400, height=300)
+
+        self._canvas.place(width=400, height=300)
+
+    def _resize(self, event):
+        if event.width / event.height > self.aspect_ratio:
+            self._canvas.place(width=event.height * self.aspect_ratio, height=event.height)
+        else:
+            self._canvas.place(width=event.width, height=event.width / self.aspect_ratio)
+        self.configure(width=event.width, height=event.height)
+
+
+class Canvas(tk.Canvas):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs, bg="blue", highlightthickness=0)
+
+        self.bind("<Configure>", self._resize)
+
+        self.create_line(0, 0, kwargs["width"], kwargs["height"])
+        self.create_line(0, kwargs["height"], kwargs["width"], 0)
+
+    def _resize(self, event):
+        width_ratio = event.width / float(self["width"])
+        height_ratio = event.height / float(self["height"])
+        self.scale("all", 0, 0, width_ratio, height_ratio)
+        self.configure(width=event.width, height=event.height)
 
 
 class GridView(tk.Canvas):
