@@ -76,30 +76,30 @@ class ScoreBoard(ttk.Label):
 
 class GridView(tk.Canvas):
     def __init__(self, master, n_rows, n_columns):
-        cell_side = 50
-        canvas_width = n_columns * cell_side
-        canvas_height = n_rows * cell_side
+        cell_size = 50
+        canvas_width = n_columns * cell_size
+        canvas_height = n_rows * cell_size
         super().__init__(
             master, width=canvas_width, height=canvas_height, highlightthickness=0
         )
 
         self._create_frame(canvas_width, canvas_height)
-        self._board = self._create_grid(n_rows, n_columns, cell_side)
+        self._board = self._create_grid(n_rows, n_columns, cell_size)
 
     def _create_frame(self, width, height):
         self.create_rectangle(
             0, 0, width, height, width=10, outline="dark blue", fill="medium blue"
         )
 
-    def _create_grid(self, n_rows, n_columns, cell_side):
+    def _create_grid(self, n_rows, n_columns, cell_size):
         grid = []
         for i in range(n_columns):
             column = []
             for j in reversed(range(n_rows)):
-                x0 = i * cell_side
-                y0 = j * cell_side
-                x1 = x0 + cell_side
-                y1 = y0 + cell_side
+                x0 = i * cell_size
+                y0 = j * cell_size
+                x1 = x0 + cell_size
+                y1 = y0 + cell_size
                 column.append(GridCircle(self, x0, y0, x1, y1))
             grid.append(column)
         return grid
