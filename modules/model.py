@@ -13,7 +13,7 @@ class Subject:
 
     def notify_observers(self):
         for observer in self._observers:
-            observer.update_()
+            observer.update_observer()
 
 
 class Game(Subject):

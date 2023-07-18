@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 class Observer(ABC):
     @abstractmethod
-    def update_(self):
+    def update_observer(self):
         pass
 
 
@@ -24,14 +24,14 @@ class View(ttk.Frame, Observer):
             player.id_: self._colors[i] for i, player in enumerate(model.players)
         }
 
-        self._score = ScoreBoard(self)
+        self._score = ttk.Label(self, text="score")
         self._grid_view = GridView(self, model.n_rows, model.n_columns)
         for i in range(model.n_columns):
             for j in range(model.n_rows):
                 self._grid_view.get(i, j).bind(
                     "<Button-1>", lambda event, x=i: self._click(x)
                 )
-        restart_button = tk.Button(self, text="Restart", command=self._restart)
+        restart_button = ttk.Button(self, text="Restart", command=self._restart)
 
         self._score.grid(column=0, row=0, padx=10, pady=10)
         self._grid_view.grid(column=0, row=1, padx=10, pady=10)
@@ -43,13 +43,13 @@ class View(ttk.Frame, Observer):
     def _restart(self):
         self._model.restart()
 
-    def update_(self):
+    def update_observer(self):
         self._update_score()
         self._update_grid()
 
     def _update_score(self):
         score = self._get_score()
-        self._score.update_(score)
+        self._score.configure(text=score)
 
     def _get_score(self):
         return " / ".join(str(player.score) for player in self._model.players)
@@ -57,21 +57,13 @@ class View(ttk.Frame, Observer):
     def _update_grid(self):
         for i in range(self._model.n_columns):
             for j in range(self._model.n_rows):
-                grid_circle = self._grid_view.get(i, j)
+                grid_cell = self._grid_view.get(i, j)
                 value = self._model.grid[i][j]
                 if value:
                     token = self._player_color[value]
-                    grid_circle.update(token)
+                    grid_cell.update(token)
                 else:
-                    grid_circle.reset()
-
-
-class ScoreBoard(ttk.Label):
-    def __init__(self, master):
-        super().__init__(master, text="score")
-
-    def update_(self, score):
-        self.configure(text=score)
+                    grid_cell.clear()
 
 
 class GridView(tk.Canvas):
@@ -84,7 +76,7 @@ class GridView(tk.Canvas):
         )
 
         self._create_frame(canvas_width, canvas_height)
-        self._board = self._create_grid(n_rows, n_columns, cell_size)
+        self._grid = self._create_grid(n_rows, n_columns, cell_size)
 
     def _create_frame(self, width, height):
         self.create_rectangle(
@@ -100,15 +92,15 @@ class GridView(tk.Canvas):
                 y0 = j * cell_size
                 x1 = x0 + cell_size
                 y1 = y0 + cell_size
-                column.append(GridCircle(self, x0, y0, x1, y1))
+                column.append(GridCell(self, x0, y0, x1, y1))
             grid.append(column)
         return grid
 
     def get(self, i, j):
-        return self._board[i][j]
+        return self._grid[i][j]
 
 
-class GridCircle:
+class GridCell:
     def __init__(self, canvas, x0, y0, x1, y1):
         self._canvas = canvas
         ipad = 5
@@ -122,7 +114,7 @@ class GridCircle:
     def update(self, color):
         self._fill(color)
 
-    def reset(self):
+    def clear(self):
         self._fill("blue")
 
     def _fill(self, color):
