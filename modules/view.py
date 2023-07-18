@@ -57,13 +57,13 @@ class View(ttk.Frame, Observer):
     def _update_grid(self):
         for i in range(self._model.n_columns):
             for j in range(self._model.n_rows):
-                grid_circle = self._grid_view.get(i, j)
+                grid_cell = self._grid_view.get(i, j)
                 value = self._model.grid[i][j]
                 if value:
                     token = self._player_color[value]
-                    grid_circle.update(token)
+                    grid_cell.update(token)
                 else:
-                    grid_circle.reset()
+                    grid_cell.clear()
 
 
 class ScoreBoard(ttk.Label):
@@ -100,7 +100,7 @@ class GridView(tk.Canvas):
                 y0 = j * cell_size
                 x1 = x0 + cell_size
                 y1 = y0 + cell_size
-                column.append(GridCircle(self, x0, y0, x1, y1))
+                column.append(GridCell(self, x0, y0, x1, y1))
             grid.append(column)
         return grid
 
@@ -108,7 +108,7 @@ class GridView(tk.Canvas):
         return self._board[i][j]
 
 
-class GridCircle:
+class GridCell:
     def __init__(self, canvas, x0, y0, x1, y1):
         self._canvas = canvas
         ipad = 5
@@ -122,7 +122,7 @@ class GridCircle:
     def update(self, color):
         self._fill(color)
 
-    def reset(self):
+    def clear(self):
         self._fill("blue")
 
     def _fill(self, color):
