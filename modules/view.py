@@ -67,12 +67,12 @@ class View(ttk.Frame, Observer):
 
 
 class GridView(tk.Canvas):
-    def __init__(self, master, n_rows, n_columns):
+    def __init__(self, parent, n_rows, n_columns):
         cell_size = 50
         canvas_width = n_columns * cell_size
         canvas_height = n_rows * cell_size
         super().__init__(
-            master, width=canvas_width, height=canvas_height, highlightthickness=0
+            parent, width=canvas_width, height=canvas_height, highlightthickness=0
         )
 
         self._create_frame(canvas_width, canvas_height)
@@ -105,7 +105,13 @@ class GridCell:
         self._canvas = canvas
         ipad = 5
         self._id = canvas.create_oval(
-            x0 + ipad, y0 + ipad, x1 - ipad, y1 - ipad, width=5, fill="blue", outline="dark blue"
+            x0 + ipad,
+            y0 + ipad,
+            x1 - ipad,
+            y1 - ipad,
+            width=5,
+            fill="blue",
+            outline="dark blue",
         )
 
     def bind(self, event, command):
