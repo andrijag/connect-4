@@ -30,11 +30,11 @@ class Game(Subject):
         self._game_over = False
         self.winner = None
 
-    def drop(self, i):
-        if not self._legal_move(i):
+    def drop(self, j):
+        if not self._legal_move(j):
             return
-        self._player.drop(self.grid, i)
-        if self._winning_move(i):
+        self._player.drop(self.grid, j)
+        if self._winning_move(j):
             self._end_game()
             self._add_score()
         elif self._is_draw():
@@ -43,11 +43,11 @@ class Game(Subject):
             self._next_turn()
         self.notify_observers()
 
-    def _legal_move(self, i):
-        return not self._game_over and not self.grid[i][-1]
+    def _legal_move(self, j):
+        return not self._game_over and not self.grid[0][j]
 
-    def _winning_move(self, i):
-        for j in reversed(range(self.grid.n_rows)):
+    def _winning_move(self, j):
+        for i in range(self.grid.n_rows):
             if self.grid[i][j]:
                 return self._evaluator.check(i, j)
 
@@ -59,8 +59,8 @@ class Game(Subject):
         self._player.score += 1
 
     def _is_draw(self):
-        for i in range(self.n_columns):
-            for j in range(self.n_rows):
+        for i in range(self.n_rows):
+            for j in range(self.n_columns):
                 if not self.grid[i][j]:
                     return False
         return True
@@ -86,15 +86,15 @@ class Player:
     def __str__(self):
         return f"player {self.id_}"
 
-    def drop(self, grid, i):
-        grid.drop(i, self.id_)
+    def drop(self, grid, j):
+        grid.drop(j, self.id_)
 
 
 class Grid:
     def __init__(self, n_rows, n_columns):
         self.n_rows = n_rows
         self.n_columns = n_columns
-        self._matrix = [[0 for _ in range(n_rows)] for _ in range(n_columns)]
+        self._matrix = [[0 for _ in range(n_columns)] for _ in range(n_rows)]
 
     def __getitem__(self, key):
         return self._matrix[key]
@@ -102,8 +102,8 @@ class Grid:
     def __str__(self):
         return str(self._matrix)
 
-    def drop(self, i, value):
-        for j in range(self.n_rows):
+    def drop(self, j, value):
+        for i in reversed(range(self.n_rows)):
             if not self._matrix[i][j]:
                 self._matrix[i][j] = value
                 return
@@ -132,8 +132,8 @@ class Evaluator:
 
     def _count_consecutive(self, i, j, di, dj):
         if (
-            i + di in range(self._grid.n_columns)
-            and j + dj in range(self._grid.n_rows)
+            i + di in range(self._grid.n_rows)
+            and j + dj in range(self._grid.n_columns)
             and self._grid[i][j] == self._grid[i + di][j + dj]
         ):
             return 1 + self._count_consecutive(i + di, j + dj, di, dj)
