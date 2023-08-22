@@ -28,12 +28,16 @@ class Game(Subject):
         self.grid = Grid(n_rows, n_columns)
         self._evaluator = Evaluator(self.grid, connect_n)
         self._game_over = False
+        self.winner = None
 
     def drop(self, i):
         if not self._legal_move(i):
             return
         self._player.drop(self.grid, i)
         if self._winning_move(i):
+            self._end_game()
+            self._add_score()
+        elif self._is_draw():
             self._end_game()
         else:
             self._next_turn()
@@ -49,7 +53,17 @@ class Game(Subject):
 
     def _end_game(self):
         self._game_over = True
+
+    def _add_score(self):
+        self.winner = self._player
         self._player.score += 1
+
+    def _is_draw(self):
+        for i in range(self.n_columns):
+            for j in range(self.n_rows):
+                if not self.grid[i][j]:
+                    return False
+        return True
 
     def _next_turn(self):
         self._player = next(self._iterator)
@@ -60,6 +74,7 @@ class Game(Subject):
         self.grid = Grid(self.n_rows, self.n_columns)
         self._evaluator = Evaluator(self.grid, self.connect_n)
         self._game_over = False
+        self.winner = None
         self.notify_observers()
 
 
