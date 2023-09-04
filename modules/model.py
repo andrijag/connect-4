@@ -37,7 +37,7 @@ class Game(Subject):
         if self._winning_move(column):
             self._end_game()
             self._add_score()
-        elif self._filled_board():
+        elif self._filled_grid():
             self._end_game()
         else:
             self._next_turn()
@@ -58,7 +58,7 @@ class Game(Subject):
         self.winner = self._player
         self.winner.score += 1
 
-    def _filled_board(self):
+    def _filled_grid(self):
         for row in range(self.n_rows):
             for column in range(self.n_columns):
                 if not self.grid[row][column]:
