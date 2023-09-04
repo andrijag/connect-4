@@ -30,38 +30,38 @@ class Game(Subject):
         self._game_over = False
         self.winner = None
 
-    def drop(self, j):
-        if not self._legal_move(j):
+    def drop(self, column):
+        if self._game_over or not self._legal_move(column):
             return
-        self._player.drop(self.grid, j)
-        if self._winning_move(j):
+        self._player.drop(self.grid, column)
+        if self._winning_move(column):
             self._end_game()
             self._add_score()
-        elif self._is_draw():
+        elif self._filled_board():
             self._end_game()
         else:
             self._next_turn()
         self.notify_observers()
 
-    def _legal_move(self, j):
-        return not self._game_over and not self.grid[0][j]
+    def _legal_move(self, column):
+        return not self.grid[0][column]
 
-    def _winning_move(self, j):
-        for i in range(self.grid.n_rows):
-            if self.grid[i][j]:
-                return self._evaluator.check(i, j)
+    def _winning_move(self, column):
+        for row in range(self.grid.n_rows):
+            if self.grid[row][column]:
+                return self._evaluator.check(row, column)
 
     def _end_game(self):
         self._game_over = True
 
     def _add_score(self):
         self.winner = self._player
-        self._player.score += 1
+        self.winner.score += 1
 
-    def _is_draw(self):
-        for i in range(self.n_rows):
-            for j in range(self.n_columns):
-                if not self.grid[i][j]:
+    def _filled_board(self):
+        for row in range(self.n_rows):
+            for column in range(self.n_columns):
+                if not self.grid[row][column]:
                     return False
         return True
 
@@ -86,8 +86,8 @@ class Player:
     def __str__(self):
         return f"player {self.id_}"
 
-    def drop(self, grid, j):
-        grid.drop(j, self.id_)
+    def drop(self, grid, column):
+        grid.drop(column, self.id_)
 
 
 class Grid:
@@ -102,10 +102,10 @@ class Grid:
     def __str__(self):
         return str(self._matrix)
 
-    def drop(self, j, value):
-        for i in reversed(range(self.n_rows)):
-            if not self._matrix[i][j]:
-                self._matrix[i][j] = value
+    def drop(self, column, value):
+        for row in reversed(range(self.n_rows)):
+            if not self._matrix[row][column]:
+                self._matrix[row][column] = value
                 return
 
 

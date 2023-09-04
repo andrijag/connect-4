@@ -26,10 +26,10 @@ class View(ttk.Frame, Observer):
 
         self._score = ttk.Label(self, text="score")
         self._grid_view = GridView(self, model.n_rows, model.n_columns)
-        for i in range(model.n_rows):
-            for j in range(model.n_columns):
-                self._grid_view.get(i, j).bind(
-                    "<Button-1>", lambda event, x=j: self._click(x)
+        for row in range(model.n_rows):
+            for column in range(model.n_columns):
+                self._grid_view.get(row, column).bind(
+                    "<Button-1>", lambda event, column=column: self._click(column)
                 )
         restart_button = ttk.Button(self, text="Restart", command=self._restart)
 
@@ -37,8 +37,8 @@ class View(ttk.Frame, Observer):
         self._grid_view.grid(column=0, row=1, padx=10, pady=10)
         restart_button.grid(column=0, row=2, padx=10, pady=10)
 
-    def _click(self, j):
-        self._model.drop(j)
+    def _click(self, column):
+        self._model.drop(column)
 
     def _restart(self):
         self._model.restart()
@@ -55,10 +55,10 @@ class View(ttk.Frame, Observer):
         return " / ".join(str(player.score) for player in self._model.players)
 
     def _update_grid(self):
-        for i in range(self._model.n_rows):
-            for j in range(self._model.n_columns):
-                grid_cell = self._grid_view.get(i, j)
-                value = self._model.grid[i][j]
+        for row in range(self._model.n_rows):
+            for column in range(self._model.n_columns):
+                grid_cell = self._grid_view.get(row, column)
+                value = self._model.grid[row][column]
                 if value:
                     token = self._player_color[value]
                     grid_cell.update(token)
@@ -96,8 +96,8 @@ class GridView(tk.Canvas):
             grid.append(row)
         return grid
 
-    def get(self, i, j):
-        return self._grid[i][j]
+    def get(self, row, column):
+        return self._grid[row][column]
 
 
 class GridCell:
