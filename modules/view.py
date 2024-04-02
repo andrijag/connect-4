@@ -5,12 +5,12 @@ from abc import ABC, abstractmethod
 
 class Observer(ABC):
     @abstractmethod
-    def update_observer(self):
+    def update_observer(self) -> None:
         pass
 
 
 class View(ttk.Frame, Observer):
-    def __init__(self, parent, model):
+    def __init__(self, parent, model) -> None:
         super().__init__(parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -37,24 +37,24 @@ class View(ttk.Frame, Observer):
         self._grid_view.grid(column=0, row=1, padx=10, pady=10)
         restart_button.grid(column=0, row=2, padx=10, pady=10)
 
-    def _click(self, column):
+    def _click(self, column: int) -> None:
         self._model.drop(column)
 
-    def _restart(self):
+    def _restart(self) -> None:
         self._model.restart()
 
-    def update_observer(self):
+    def update_observer(self) -> None:
         self._update_score()
         self._update_grid()
 
-    def _update_score(self):
+    def _update_score(self) -> None:
         score = self._get_score()
         self._score.configure(text=score)
 
-    def _get_score(self):
+    def _get_score(self) -> str:
         return " / ".join(str(player.score) for player in self._model.players)
 
-    def _update_grid(self):
+    def _update_grid(self) -> None:
         for row in range(self._model.n_rows):
             for column in range(self._model.n_columns):
                 grid_cell = self._grid_view.get(row, column)
@@ -67,7 +67,7 @@ class View(ttk.Frame, Observer):
 
 
 class GridView(tk.Canvas):
-    def __init__(self, parent, n_rows, n_columns):
+    def __init__(self, parent, n_rows: int, n_columns: int) -> None:
         cell_size = 50
         canvas_width = n_columns * cell_size
         canvas_height = n_rows * cell_size
@@ -78,12 +78,12 @@ class GridView(tk.Canvas):
         self._create_frame(canvas_width, canvas_height)
         self._grid = self._create_grid(n_rows, n_columns, cell_size)
 
-    def _create_frame(self, width, height):
+    def _create_frame(self, width: int, height: int) -> None:
         self.create_rectangle(
             0, 0, width, height, width=10, outline="dark blue", fill="medium blue"
         )
 
-    def _create_grid(self, n_rows, n_columns, cell_size):
+    def _create_grid(self, n_rows: int, n_columns: int, cell_size: int) -> list[list['GridCell']]:
         grid = []
         for i in range(n_rows):
             row = []
@@ -96,12 +96,12 @@ class GridView(tk.Canvas):
             grid.append(row)
         return grid
 
-    def get(self, row, column):
+    def get(self, row: int, column: int) -> 'GridCell':
         return self._grid[row][column]
 
 
 class GridCell:
-    def __init__(self, canvas, x0, y0, x1, y1):
+    def __init__(self, canvas: tk.Canvas, x0: int, y0: int, x1: int, y1: int) -> None:
         self._canvas = canvas
         ipad = 5
         self._id = canvas.create_oval(
@@ -114,14 +114,14 @@ class GridCell:
             outline="dark blue",
         )
 
-    def bind(self, event, command):
+    def bind(self, event: str, command) -> None:
         self._canvas.tag_bind(self._id, event, command)
 
-    def update(self, color):
+    def update(self, color: str) -> None:
         self._fill(color)
 
-    def clear(self):
+    def clear(self) -> None:
         self._fill("blue")
 
-    def _fill(self, color):
+    def _fill(self, color: str) -> None:
         self._canvas.itemconfigure(self._id, fill=color)

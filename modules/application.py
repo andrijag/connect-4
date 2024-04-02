@@ -8,7 +8,7 @@ CONNECT_N = 4
 
 
 class Application(tk.Tk):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.title("Connect 4")
         self.columnconfigure(0, weight=1)
