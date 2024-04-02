@@ -15,6 +15,11 @@ class Subject:
         for observer in self._observers:
             observer.update_observer()
 
+class Observer(ABC):
+    @abstractmethod
+    def update_observer(self) -> None:
+        pass
+
 
 class Game(Subject):
     def __init__(self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2) -> None:
@@ -111,7 +116,7 @@ class Grid:
 
 
 class Evaluator:
-    def __init__(self, grid, connect_n) -> None:
+    def __init__(self, grid: Grid, connect_n: int) -> None:
         self._grid = grid
         self._connect_n = connect_n
         self._vectors = {
