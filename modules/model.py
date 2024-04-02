@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from itertools import cycle
 
 
@@ -5,15 +6,16 @@ class Subject:
     def __init__(self) -> None:
         self._observers = []
 
-    def attach_observer(self, observer) -> None:
+    def attach_observer(self, observer: 'Observer') -> None:
         self._observers.append(observer)
 
-    def detach_observer(self, observer) -> None:
+    def detach_observer(self, observer: 'Observer') -> None:
         self._observers.remove(observer)
 
     def notify_observers(self) -> None:
         for observer in self._observers:
             observer.update_observer()
+
 
 class Observer(ABC):
     @abstractmethod

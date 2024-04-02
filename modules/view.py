@@ -1,16 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
-from abc import ABC, abstractmethod
-
-
-class Observer(ABC):
-    @abstractmethod
-    def update_observer(self) -> None:
-        pass
+from .model import Game, Observer
 
 
 class View(ttk.Frame, Observer):
-    def __init__(self, parent, model) -> None:
+    def __init__(self, parent, model: Game) -> None:
         super().__init__(parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
