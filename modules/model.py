@@ -2,22 +2,22 @@ from itertools import cycle
 
 
 class Subject:
-    def __init__(self):
+    def __init__(self) -> None:
         self._observers = []
 
-    def attach_observer(self, observer):
+    def attach_observer(self, observer) -> None:
         self._observers.append(observer)
 
-    def detach_observer(self, observer):
+    def detach_observer(self, observer) -> None:
         self._observers.remove(observer)
 
-    def notify_observers(self):
+    def notify_observers(self) -> None:
         for observer in self._observers:
             observer.update_observer()
 
 
 class Game(Subject):
-    def __init__(self, n_rows, n_columns, connect_n, n_players=2):
+    def __init__(self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2) -> None:
         super().__init__()
         self.n_rows = n_rows
         self.n_columns = n_columns
@@ -30,7 +30,7 @@ class Game(Subject):
         self._game_over = False
         self.winner = None
 
-    def drop(self, column):
+    def drop(self, column: int) -> None:
         if self._game_over or not self._legal_move(column):
             return
         self._player.drop(self.grid, column)
@@ -43,32 +43,33 @@ class Game(Subject):
             self._next_turn()
         self.notify_observers()
 
-    def _legal_move(self, column):
+    def _legal_move(self, column: int) -> bool:
         return not self.grid[0][column]
 
-    def _winning_move(self, column):
+    def _winning_move(self, column: int) -> bool:
         for row in range(self.grid.n_rows):
             if self.grid[row][column]:
                 return self._evaluator.check(row, column)
+        return False
 
-    def _end_game(self):
+    def _end_game(self) -> None:
         self._game_over = True
 
-    def _add_score(self):
+    def _add_score(self) -> None:
         self.winner = self._player
         self.winner.score += 1
 
-    def _filled_grid(self):
+    def _filled_grid(self) -> bool:
         for row in range(self.n_rows):
             for column in range(self.n_columns):
                 if not self.grid[row][column]:
                     return False
         return True
 
-    def _next_turn(self):
+    def _next_turn(self) -> None:
         self._player = next(self._iterator)
 
-    def restart(self):
+    def restart(self) -> None:
         self._iterator = cycle(self.players)
         self._player = next(self._iterator)
         self.grid = Grid(self.n_rows, self.n_columns)
@@ -79,30 +80,30 @@ class Game(Subject):
 
 
 class Player:
-    def __init__(self, id_):
+    def __init__(self, id_: int) -> None:
         self.id_ = id_
         self.score = 0
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"player {self.id_}"
 
-    def drop(self, grid, column):
+    def drop(self, grid: 'Grid', column: int) -> None:
         grid.drop(column, self.id_)
 
 
 class Grid:
-    def __init__(self, n_rows, n_columns):
+    def __init__(self, n_rows: int, n_columns: int) -> None:
         self.n_rows = n_rows
         self.n_columns = n_columns
         self._matrix = [[0 for _ in range(n_columns)] for _ in range(n_rows)]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> list[int] | int:
         return self._matrix[key]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self._matrix)
 
-    def drop(self, column, value):
+    def drop(self, column: int, value: int) -> None:
         for row in reversed(range(self.n_rows)):
             if not self._matrix[row][column]:
                 self._matrix[row][column] = value
@@ -110,7 +111,7 @@ class Grid:
 
 
 class Evaluator:
-    def __init__(self, grid, connect_n):
+    def __init__(self, grid, connect_n) -> None:
         self._grid = grid
         self._connect_n = connect_n
         self._vectors = {
@@ -120,17 +121,18 @@ class Evaluator:
             "anti-diagonal": (-1, 1),
         }
 
-    def check(self, i, j):
+    def check(self, i: int, j: int) -> bool:
         for di, dj in self._vectors.values():
             if self._count_in_direction(i, j, di, dj) >= self._connect_n:
                 return True
+        return False
 
-    def _count_in_direction(self, i, j, di, dj):
+    def _count_in_direction(self, i: int, j: int, di: int, dj: int) -> int:
         direction = self._count_consecutive(i, j, di, dj)
         opposite_direction = self._count_consecutive(i, j, -di, -dj)
         return direction + opposite_direction - 1
 
-    def _count_consecutive(self, i, j, di, dj):
+    def _count_consecutive(self, i: int, j: int, di: int, dj: int) -> int:
         if (
             i + di in range(self._grid.n_rows)
             and j + dj in range(self._grid.n_columns)
