@@ -1,7 +1,7 @@
+from collections.abc import Callable
 import tkinter as tk
 from tkinter import ttk
-from .model import Game, Observer
-from typing import Callable
+from .model import Observer, Game
 
 
 class View(ttk.Frame, Observer):
@@ -78,7 +78,9 @@ class GridView(tk.Canvas):
             0, 0, width, height, width=10, outline="dark blue", fill="medium blue"
         )
 
-    def _create_grid(self, n_rows: int, n_columns: int, cell_size: int) -> list[list['GridCell']]:
+    def _create_grid(
+        self, n_rows: int, n_columns: int, cell_size: int
+    ) -> list[list["GridCell"]]:
         grid = []
         for i in range(n_rows):
             row = []
@@ -91,7 +93,7 @@ class GridView(tk.Canvas):
             grid.append(row)
         return grid
 
-    def get(self, row: int, column: int) -> 'GridCell':
+    def get(self, row: int, column: int) -> "GridCell":
         return self._grid[row][column]
 
 
@@ -109,7 +111,7 @@ class GridCell:
             outline="dark blue",
         )
 
-    def bind(self, event: str, command: Callable[[tk.Event[tk.Canvas]], None]) -> None:
+    def bind(self, event: str, command: Callable[[tk.Event], None]) -> None:
         self._canvas.tag_bind(self._id, event, command)
 
     def update(self, color: str) -> None:
