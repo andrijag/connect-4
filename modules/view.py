@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from .model import Game, Observer
+from typing import Callable
 
 
 class View(ttk.Frame, Observer):
-    def __init__(self, parent, model: Game) -> None:
+    def __init__(self, parent: tk.Misc, model: Game) -> None:
         super().__init__(parent)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -61,7 +62,7 @@ class View(ttk.Frame, Observer):
 
 
 class GridView(tk.Canvas):
-    def __init__(self, parent, n_rows: int, n_columns: int) -> None:
+    def __init__(self, parent: tk.Misc, n_rows: int, n_columns: int) -> None:
         cell_size = 50
         canvas_width = n_columns * cell_size
         canvas_height = n_rows * cell_size
@@ -108,7 +109,7 @@ class GridCell:
             outline="dark blue",
         )
 
-    def bind(self, event: str, command) -> None:
+    def bind(self, event: str, command: Callable[[tk.Event[tk.Canvas]], None]) -> None:
         self._canvas.tag_bind(self._id, event, command)
 
     def update(self, color: str) -> None:
