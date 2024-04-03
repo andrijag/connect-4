@@ -6,10 +6,10 @@ class Subject:
     def __init__(self) -> None:
         self._observers = []
 
-    def attach_observer(self, observer: 'Observer') -> None:
+    def attach_observer(self, observer: "Observer") -> None:
         self._observers.append(observer)
 
-    def detach_observer(self, observer: 'Observer') -> None:
+    def detach_observer(self, observer: "Observer") -> None:
         self._observers.remove(observer)
 
     def notify_observers(self) -> None:
@@ -24,7 +24,9 @@ class Observer(ABC):
 
 
 class Game(Subject):
-    def __init__(self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2) -> None:
+    def __init__(
+        self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2
+    ) -> None:
         super().__init__()
         self.n_rows = n_rows
         self.n_columns = n_columns
@@ -51,7 +53,8 @@ class Game(Subject):
         self.notify_observers()
 
     def _legal_move(self, column: int) -> bool:
-        return not self.grid[0][column]
+        top_row = 0
+        return not self.grid[top_row][column]
 
     def _winning_move(self, column: int) -> bool:
         for row in range(self.grid.n_rows):
@@ -94,7 +97,7 @@ class Player:
     def __str__(self) -> str:
         return f"player {self.id_}"
 
-    def drop(self, grid: 'Grid', column: int) -> None:
+    def drop(self, grid: "Grid", column: int) -> None:
         grid.drop(column, self.id_)
 
 
