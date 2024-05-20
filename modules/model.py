@@ -40,7 +40,7 @@ class Game(Subject):
         self.winner = None
 
     def drop(self, column: int) -> None:
-        if self._game_over or not self._legal_move(column):
+        if not self._legal_move(column):
             return
         self._player.drop(self.grid, column)
         if self._winning_move(column):
@@ -54,7 +54,7 @@ class Game(Subject):
 
     def _legal_move(self, column: int) -> bool:
         top_row = 0
-        return not self.grid[top_row][column]
+        return not self._game_over and not self.grid[top_row][column]
 
     def _winning_move(self, column: int) -> bool:
         for row in range(self.grid.n_rows):
@@ -70,9 +70,9 @@ class Game(Subject):
         self.winner.score += 1
 
     def _filled_grid(self) -> bool:
-        for row in range(self.n_rows):
-            for column in range(self.n_columns):
-                if not self.grid[row][column]:
+        for row in self.grid:
+            for cell in row:
+                if not cell:
                     return False
         return True
 
