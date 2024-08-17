@@ -46,7 +46,7 @@ class Game(Subject):
         if self._winning_move(column):
             self._end_game()
             self._add_score()
-        elif self._filled_grid():
+        elif self.grid.is_filled():
             self._end_game()
         else:
             self._next_turn()
@@ -68,13 +68,6 @@ class Game(Subject):
     def _add_score(self) -> None:
         self.winner = self._player
         self.winner.score += 1
-
-    def _filled_grid(self) -> bool:
-        for row in self.grid:
-            for cell in row:
-                if not cell:
-                    return False
-        return True
 
     def _next_turn(self) -> None:
         self._player = next(self._iterator)
@@ -98,7 +91,7 @@ class Player:
         return f"player {self.id_}"
 
     def drop(self, grid: "Grid", column: int) -> None:
-        grid.drop(column, self.id_)
+        grid.stack(column, self.id_)
 
 
 class Grid:
@@ -113,11 +106,19 @@ class Grid:
     def __str__(self) -> str:
         return str(self._matrix)
 
-    def drop(self, column: int, value: int) -> None:
+    def stack(self, column: int, value: int) -> None:
         for row in reversed(range(self.n_rows)):
             if not self._matrix[row][column]:
                 self._matrix[row][column] = value
                 return
+        raise IndexError
+
+    def is_filled(self) -> bool:
+        for row in self._matrix:
+            for cell in row:
+                if not cell:
+                    return False
+        return True
 
 
 class Evaluator:
@@ -132,6 +133,8 @@ class Evaluator:
         }
 
     def check(self, i: int, j: int) -> bool:
+        if not self._grid[i][j]:
+            return False
         for di, dj in self._vectors.values():
             if self._count_in_direction(i, j, di, dj) >= self._connect_n:
                 return True
