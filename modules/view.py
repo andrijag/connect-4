@@ -1,6 +1,7 @@
 from collections.abc import Callable
 import tkinter as tk
 from tkinter import ttk
+
 from .model import Observer, Game
 
 

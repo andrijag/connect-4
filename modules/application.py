@@ -1,4 +1,5 @@
 import tkinter as tk
+
 from .model import Game
 from .view import View
 
