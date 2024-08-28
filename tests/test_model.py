@@ -37,3 +37,21 @@ class TestGrid:
                 grid.stack(column, value)
 
             grid.stack(column, value)
+
+
+class TestPlayer:
+    @pytest.fixture
+    def player(self):
+        id_ = 1
+        return Player(id_)
+
+    def test_drop(self, player):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
+
+        column = 0
+        player.drop(grid, column)
+
+        bottom_row = -1
+        assert grid[bottom_row][column] == player.id_
