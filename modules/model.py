@@ -114,11 +114,7 @@ class Grid:
         raise IndexError
 
     def is_filled(self) -> bool:
-        for row in self._matrix:
-            for cell in row:
-                if not cell:
-                    return False
-        return True
+        return all(all(row) for row in self._matrix)
 
 
 class Evaluator:
