@@ -28,9 +28,6 @@ class Game(Subject):
         self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2
     ) -> None:
         super().__init__()
-        self.n_rows = n_rows
-        self.n_columns = n_columns
-        self.connect_n = connect_n
         self.players = [Player(i) for i in range(1, n_players + 1)]
         self._iterator = cycle(self.players)
         self._player = next(self._iterator)
@@ -38,6 +35,18 @@ class Game(Subject):
         self._evaluator = Evaluator(self.grid, connect_n)
         self._game_over = False
         self.winner = None
+
+    @property
+    def n_rows(self) -> int:
+        return self.grid.n_rows
+
+    @property
+    def n_columns(self) -> int:
+        return self.grid.n_columns
+
+    @property
+    def connect_n(self) -> int:
+        return self._evaluator.connect_n
 
     def drop(self, column: int) -> None:
         if not self._legal_move(column):
@@ -57,7 +66,7 @@ class Game(Subject):
         return not self._game_over and not self.grid[top_row][column]
 
     def _winning_move(self, column: int) -> bool:
-        for row in range(self.grid.n_rows):
+        for row in range(self.n_rows):
             if self.grid[row][column]:
                 return self._evaluator.check(row, column)
         return False
@@ -120,7 +129,7 @@ class Grid:
 class Evaluator:
     def __init__(self, grid: Grid, connect_n: int) -> None:
         self._grid = grid
-        self._connect_n = connect_n
+        self.connect_n = connect_n
         self._vectors = {
             "horizontal": (0, 1),
             "vertical": (1, 0),
@@ -132,7 +141,7 @@ class Evaluator:
         if not self._grid[i][j]:
             return False
         for di, dj in self._vectors.values():
-            if self._count_in_direction(i, j, di, dj) >= self._connect_n:
+            if self._count_in_direction(i, j, di, dj) >= self.connect_n:
                 return True
         return False
 
