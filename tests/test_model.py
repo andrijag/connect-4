@@ -4,13 +4,11 @@ from modules.model import Grid, Player
 
 
 class TestGrid:
-    @pytest.fixture
-    def grid(self):
+    def test_stack_empty_column(self):
         n_rows = 6
         n_columns = 7
-        return Grid(n_rows, n_columns)
+        grid = Grid(n_rows, n_columns)
 
-    def test_stack_empty_column(self, grid):
         column = 0
         value = 1
         grid.stack(column, value)
@@ -18,34 +16,73 @@ class TestGrid:
         bottom_row = -1
         assert grid[bottom_row][column] == value
 
-    def test_stack_consecutive(self, grid):
+    def test_stack_consecutive(self):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
+
         column = 0
         value = 1
 
-        for _ in range(grid.n_rows):
+        for _ in range(n_rows):
             grid.stack(column, value)
 
-        row = -grid.n_rows
+        row = -n_rows
         assert grid[row][column] == value
 
-    def test_stack_filled_column(self, grid):
-        with pytest.raises(IndexError):
-            column = 0
-            value = 1
+    def test_stack_filled_column(self):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
 
-            for _ in range(grid.n_rows):
+        column = 0
+        value = 1
+
+        for _ in range(n_rows):
+            grid.stack(column, value)
+
+        with pytest.raises(IndexError):
+            grid.stack(column, value)
+
+    def test_is_filled(self):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
+
+        value = 1
+
+        for column in range(n_columns):
+            for _ in range(n_rows):
                 grid.stack(column, value)
 
+        assert grid.is_filled()
+
+    def test_is_not_filled(self):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
+
+        assert not grid.is_filled()
+
+    def test_is_filled_partially(self):
+        n_rows = 6
+        n_columns = 7
+        grid = Grid(n_rows, n_columns)
+
+        column = 0
+        value = 1
+
+        for _ in range(n_rows):
             grid.stack(column, value)
+
+        assert not grid.is_filled()
 
 
 class TestPlayer:
-    @pytest.fixture
-    def player(self):
+    def test_drop(self):
         id_ = 1
-        return Player(id_)
+        player = Player(id_)
 
-    def test_drop(self, player):
         n_rows = 6
         n_columns = 7
         grid = Grid(n_rows, n_columns)
@@ -55,3 +92,11 @@ class TestPlayer:
 
         bottom_row = -1
         assert grid[bottom_row][column] == player.id_
+
+
+class TestEvaluator:
+    pass
+
+
+class TestGame:
+    pass
