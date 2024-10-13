@@ -14,10 +14,10 @@ class View(ttk.Frame, Observer):
         self.rowconfigure(2, weight=1)
 
         self._model = model
-        self._colors = ["red", "yellow"]
+        colors = ["red", "yellow"]
 
         self._player_color = {
-            player.id_: self._colors[i] for i, player in enumerate(model.players)
+            player.id_: colors[i] for i, player in enumerate(model.players)
         }
 
         self._score = ttk.Label(self, text="score")
