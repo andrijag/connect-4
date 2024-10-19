@@ -14,21 +14,25 @@ class Subject:
 
     def notify_observers(self) -> None:
         for observer in self._observers:
-            observer.update_observer()
+            observer.update_()
 
 
 class Observer(ABC):
     @abstractmethod
-    def update_observer(self) -> None:
+    def update_(self) -> None:
         pass
 
 
 class Game(Subject):
     def __init__(
-        self, n_rows: int, n_columns: int, connect_n: int, n_players: int = 2
+        self,
+        n_rows: int = 6,
+        n_columns: int = 7,
+        connect_n: int = 4,
+        n_players: int = 2,
     ) -> None:
         super().__init__()
-        self.players = [Player(i) for i in range(1, n_players + 1)]
+        self.players = [Player(id_) for id_ in range(1, n_players + 1)]
         self._iterator = cycle(self.players)
         self._player = next(self._iterator)
         self.grid = Grid(n_rows, n_columns)
@@ -104,7 +108,7 @@ class Player:
 
 
 class Grid:
-    def __init__(self, n_rows: int, n_columns: int) -> None:
+    def __init__(self, n_rows: int = 6, n_columns: int = 7) -> None:
         self.n_rows = n_rows
         self.n_columns = n_columns
         self._matrix = [[0 for _ in range(n_columns)] for _ in range(n_rows)]
@@ -127,7 +131,7 @@ class Grid:
 
 
 class Evaluator:
-    def __init__(self, grid: Grid, connect_n: int) -> None:
+    def __init__(self, grid: Grid, connect_n: int = 4) -> None:
         self._grid = grid
         self.connect_n = connect_n
         self._vectors = {

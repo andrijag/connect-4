@@ -39,7 +39,7 @@ class View(ttk.Frame, Observer):
     def _restart(self) -> None:
         self._model.restart()
 
-    def update_observer(self) -> None:
+    def update_(self) -> None:
         self._update_score()
         self._update_grid()
 
@@ -63,7 +63,7 @@ class View(ttk.Frame, Observer):
 
 
 class GridView(tk.Canvas):
-    def __init__(self, parent: tk.Misc, n_rows: int, n_columns: int) -> None:
+    def __init__(self, parent: tk.Misc, n_rows: int = 6, n_columns: int = 7) -> None:
         cell_size = 50
         canvas_width = n_columns * cell_size
         canvas_height = n_rows * cell_size
