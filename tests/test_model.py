@@ -5,75 +5,59 @@ from modules.model import Grid, Player
 
 class TestGrid:
     def test_stack_empty_column(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
-        column = 0
+        first_column = 0
         value = 1
-        grid.stack(column, value)
+        grid.stack(first_column, value)
 
         bottom_row = -1
-        assert grid[bottom_row][column] == value
+        assert grid[bottom_row][first_column] == value
 
     def test_stack_consecutive(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
-        column = 0
+        first_column = 0
         value = 1
+        for _ in range(grid.n_rows):
+            grid.stack(first_column, value)
 
-        for _ in range(n_rows):
-            grid.stack(column, value)
-
-        row = -n_rows
-        assert grid[row][column] == value
+        row = -grid.n_rows
+        assert grid[row][first_column] == value
 
     def test_stack_filled_column(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
-        column = 0
+        first_column = 0
         value = 1
-
-        for _ in range(n_rows):
-            grid.stack(column, value)
+        for _ in range(grid.n_rows):
+            grid.stack(first_column, value)
 
         with pytest.raises(IndexError):
-            grid.stack(column, value)
+            grid.stack(first_column, value)
 
     def test_is_filled(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
         value = 1
-
-        for column in range(n_columns):
-            for _ in range(n_rows):
+        for column in range(grid.n_columns):
+            for _ in range(grid.n_rows):
                 grid.stack(column, value)
 
         assert grid.is_filled()
 
     def test_is_not_filled(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
         assert not grid.is_filled()
 
     def test_is_filled_partially(self):
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
+        grid = Grid()
 
-        column = 0
+        first_column = 0
         value = 1
-
-        for _ in range(n_rows):
-            grid.stack(column, value)
+        for _ in range(grid.n_rows):
+            grid.stack(first_column, value)
 
         assert not grid.is_filled()
 
@@ -82,16 +66,13 @@ class TestPlayer:
     def test_drop(self):
         id_ = 1
         player = Player(id_)
+        grid = Grid()
 
-        n_rows = 6
-        n_columns = 7
-        grid = Grid(n_rows, n_columns)
-
-        column = 0
-        player.drop(grid, column)
+        first_column = 0
+        player.drop(grid, first_column)
 
         bottom_row = -1
-        assert grid[bottom_row][column] == player.id_
+        assert grid[bottom_row][first_column] == player.id_
 
 
 class TestEvaluator:
