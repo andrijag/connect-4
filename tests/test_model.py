@@ -25,7 +25,7 @@ class TestGrid:
         row = -grid.n_rows
         assert grid[row][first_column] == value
 
-    def test_stack_filled_column(self):
+    def test_stack_filled_column_error(self):
         grid = Grid()
 
         first_column = 0
@@ -46,12 +46,12 @@ class TestGrid:
 
         assert grid.is_filled()
 
-    def test_is_not_filled(self):
+    def test_is_not_filled_empty_grid(self):
         grid = Grid()
 
         assert not grid.is_filled()
 
-    def test_is_filled_partially(self):
+    def test_is_not_filled_partially_filled(self):
         grid = Grid()
 
         first_column = 0
