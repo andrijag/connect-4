@@ -8,16 +8,10 @@ from .model import Observer, Game
 class View(ttk.Frame, Observer):
     def __init__(self, parent: tk.Misc, model: Game) -> None:
         super().__init__(parent)
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
-
         self._model = model
-        colors = ["red", "yellow"]
-
+        token_colors = ["red", "yellow"]
         self._player_color = {
-            player.id_: colors[i] for i, player in enumerate(model.players)
+            player.id_: token_colors[i] for i, player in enumerate(model.players)
         }
 
         self._score = ttk.Label(self, text="score")
@@ -27,11 +21,10 @@ class View(ttk.Frame, Observer):
                 self._grid_view.get(i, j).bind(
                     "<Button-1>", lambda event, column=j: self._click(column)
                 )
-        restart_button = ttk.Button(self, text="Restart", command=self._restart)
+        ttk.Button(self, text="Restart", command=self._restart)
 
-        self._score.grid(column=0, row=0, padx=10, pady=10)
-        self._grid_view.grid(column=0, row=1, padx=10, pady=10)
-        restart_button.grid(column=0, row=2, padx=10, pady=10)
+        for child in self.winfo_children():
+            child.pack(expand=True, padx=10, pady=10)
 
     def _click(self, column: int) -> None:
         self._model.drop(column)
@@ -45,7 +38,7 @@ class View(ttk.Frame, Observer):
 
     def _update_score(self) -> None:
         score = self._get_score()
-        self._score.configure(text=score)
+        self._score["text"] = score
 
     def _get_score(self) -> str:
         return " / ".join(str(player.score) for player in self._model.players)
@@ -57,7 +50,7 @@ class View(ttk.Frame, Observer):
                 value = self._model.grid[row][column]
                 if value:
                     token = self._player_color[value]
-                    grid_cell.update(token)
+                    grid_cell.fill(token)
                 else:
                     grid_cell.clear()
 
@@ -115,11 +108,8 @@ class GridCell:
     def bind(self, event: str, command: Callable[[tk.Event], None]) -> None:
         self._canvas.tag_bind(self._id, event, command)
 
-    def update(self, color: str) -> None:
-        self._fill(color)
+    def fill(self, color: str) -> None:
+        self._canvas.itemconfig(self._id, fill=color)
 
     def clear(self) -> None:
-        self._fill("blue")
-
-    def _fill(self, color: str) -> None:
-        self._canvas.itemconfigure(self._id, fill=color)
+        self.fill("blue")
