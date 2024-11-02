@@ -146,22 +146,18 @@ class Evaluator:
                 return True
         return False
 
-    def _count_consecutive(
-        self, row: int, column: int, d_row: int, d_column: int
-    ) -> int:
-        direction = self._count_in_direction(row, column, d_row, d_column)
-        opposite_direction = self._count_in_direction(row, column, -d_row, -d_column)
+    def _count_consecutive(self, row: int, column: int, x: int, y: int) -> int:
+        direction = self._count_in_direction(row, column, x, y)
+        opposite_direction = self._count_in_direction(row, column, -x, -y)
         return direction + opposite_direction - 1
 
-    def _count_in_direction(
-        self, row: int, column: int, d_row: int, d_column: int
-    ) -> int:
-        next_row = row + d_row
-        next_column = column + d_column
+    def _count_in_direction(self, row: int, column: int, x: int, y: int) -> int:
+        next_row = row + x
+        next_column = column + y
         if (
             next_row in range(self._grid.n_rows)
             and next_column in range(self._grid.n_columns)
             and self._grid[row][column] == self._grid[next_row][next_column]
         ):
-            return 1 + self._count_in_direction(next_row, next_column, d_row, d_column)
+            return 1 + self._count_in_direction(next_row, next_column, x, y)
         return 1
