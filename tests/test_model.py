@@ -40,7 +40,7 @@ class TestGrid:
         value = 1
         TestGrid.stack_consecutive(grid.n_rows, grid, first_column, value)
 
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="column is filled"):
             grid.stack(first_column, value)
 
     def test_is_filled(self) -> None:
