@@ -16,7 +16,6 @@ class TestGrid:
     def test_stack_return(self, n) -> None:
         grid = Grid()
 
-        n = 2
         first_column = 0
         value = 1
         row = TestGrid.stack_consecutive(n, grid, first_column, value)
@@ -28,25 +27,6 @@ class TestGrid:
     def test_stack(self, n) -> None:
         grid = Grid()
 
-        first_column = 0
-        value = 1
-        row = TestGrid.stack_consecutive(n, grid, first_column, value)
-
-        assert grid[row][first_column] == value
-
-    def test_stack_empty_column(self) -> None:
-        grid = Grid()
-
-        first_column = 0
-        value = 1
-        row = grid.stack(first_column, value)
-
-        assert grid[row][first_column] == value
-
-    def test_stack_consecutive(self) -> None:
-        grid = Grid()
-
-        n = 2
         first_column = 0
         value = 1
         row = TestGrid.stack_consecutive(n, grid, first_column, value)
