@@ -55,8 +55,8 @@ class Game(Subject):
     def drop(self, column: int) -> None:
         if not self._legal_move(column):
             return
-        self._player.drop(self.grid, column)
-        if self._winning_move(column):
+        row = self._player.drop(self.grid, column)
+        if self._winning_move(row, column):
             self._end_game()
             self._add_score()
         elif self.grid.is_filled():
@@ -69,11 +69,8 @@ class Game(Subject):
         top_row = 0
         return not self._game_over and not self.grid[top_row][column]
 
-    def _winning_move(self, column: int) -> bool:
-        for row in range(self.n_rows):
-            if self.grid[row][column]:
-                return self._evaluator.check(row, column)
-        return False
+    def _winning_move(self, row: int, column: int) -> bool:
+        return self._evaluator.check(row, column)
 
     def _end_game(self) -> None:
         self._game_over = True
@@ -103,8 +100,8 @@ class Player:
     def __str__(self) -> str:
         return f"player {self.id_}"
 
-    def drop(self, grid: "Grid", column: int) -> None:
-        grid.stack(column, self.id_)
+    def drop(self, grid: "Grid", column: int) -> int:
+        return grid.stack(column, self.id_)
 
 
 class Grid:
@@ -119,11 +116,11 @@ class Grid:
     def __str__(self) -> str:
         return str(self._matrix)
 
-    def stack(self, column: int, value: int) -> None:
+    def stack(self, column: int, value: int) -> int:
         for row in reversed(range(self.n_rows)):
             if not self._matrix[row][column]:
                 self._matrix[row][column] = value
-                return
+                return row
         raise IndexError
 
     def is_filled(self) -> bool:
@@ -141,24 +138,30 @@ class Evaluator:
             "anti-diagonal": (-1, 1),
         }
 
-    def check(self, i: int, j: int) -> bool:
-        if not self._grid[i][j]:
+    def check(self, row: int, column: int) -> bool:
+        if not self._grid[row][column]:
             return False
-        for di, dj in self._vectors.values():
-            if self._count_in_direction(i, j, di, dj) >= self.connect_n:
+        for vector in self._vectors.values():
+            if self._count_consecutive(row, column, *vector) >= self.connect_n:
                 return True
         return False
 
-    def _count_in_direction(self, i: int, j: int, di: int, dj: int) -> int:
-        direction = self._count_consecutive(i, j, di, dj)
-        opposite_direction = self._count_consecutive(i, j, -di, -dj)
+    def _count_consecutive(
+        self, row: int, column: int, d_row: int, d_column: int
+    ) -> int:
+        direction = self._count_in_direction(row, column, d_row, d_column)
+        opposite_direction = self._count_in_direction(row, column, -d_row, -d_column)
         return direction + opposite_direction - 1
 
-    def _count_consecutive(self, i: int, j: int, di: int, dj: int) -> int:
+    def _count_in_direction(
+        self, row: int, column: int, d_row: int, d_column: int
+    ) -> int:
+        next_row = row + d_row
+        next_column = column + d_column
         if (
-            i + di in range(self._grid.n_rows)
-            and j + dj in range(self._grid.n_columns)
-            and self._grid[i][j] == self._grid[i + di][j + dj]
+            next_row in range(self._grid.n_rows)
+            and next_column in range(self._grid.n_columns)
+            and self._grid[row][column] == self._grid[next_row][next_column]
         ):
-            return 1 + self._count_consecutive(i + di, j + dj, di, dj)
+            return 1 + self._count_in_direction(next_row, next_column, d_row, d_column)
         return 1
