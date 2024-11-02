@@ -121,7 +121,7 @@ class Grid:
             if not self._matrix[row][column]:
                 self._matrix[row][column] = value
                 return row
-        raise IndexError
+        raise IndexError("column is filled")
 
     def is_filled(self) -> bool:
         return all(all(row) for row in self._matrix)
