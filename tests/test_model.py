@@ -5,7 +5,7 @@ from modules.model import Grid, Player, Evaluator
 
 class TestGrid:
     @staticmethod
-    def stack_consecutive(n: int, grid: Grid, column: int, value: int) -> int:
+    def stack_multiple(n: int, grid: Grid, column: int, value: int) -> int:
         if n < 1:
             raise ValueError("parameter n < 1")
         for _ in range(n - 1):
@@ -18,7 +18,7 @@ class TestGrid:
 
         first_column = 0
         value = 1
-        row = TestGrid.stack_consecutive(n, grid, first_column, value)
+        row = TestGrid.stack_multiple(n, grid, first_column, value)
 
         stack_row = grid.n_rows - n
         assert row == stack_row
@@ -29,7 +29,7 @@ class TestGrid:
 
         first_column = 0
         value = 1
-        row = TestGrid.stack_consecutive(n, grid, first_column, value)
+        row = TestGrid.stack_multiple(n, grid, first_column, value)
 
         assert grid[row][first_column] == value
 
@@ -38,7 +38,7 @@ class TestGrid:
 
         first_column = 0
         value = 1
-        TestGrid.stack_consecutive(grid.n_rows, grid, first_column, value)
+        TestGrid.stack_multiple(grid.n_rows, grid, first_column, value)
 
         with pytest.raises(IndexError, match="column is filled"):
             grid.stack(first_column, value)
@@ -48,7 +48,7 @@ class TestGrid:
 
         value = 1
         for column in range(grid.n_columns):
-            TestGrid.stack_consecutive(grid.n_rows, grid, column, value)
+            TestGrid.stack_multiple(grid.n_rows, grid, column, value)
 
         assert grid.is_filled()
 
@@ -57,12 +57,12 @@ class TestGrid:
 
         assert not grid.is_filled()
 
-    def test_is_not_filled_partially_filled(self) -> None:
+    def test_is_not_filled_populated_grid(self) -> None:
         grid = Grid()
 
         first_column = 0
         value = 1
-        TestGrid.stack_consecutive(grid.n_rows, grid, first_column, value)
+        grid.stack(first_column, value)
 
         assert not grid.is_filled()
 
@@ -94,7 +94,7 @@ class TestEvaluator:
 
         first_column = 0
         value = 1
-        row = TestGrid.stack_consecutive(evaluator.connect_n, grid, first_column, value)
+        row = TestGrid.stack_multiple(evaluator.connect_n, grid, first_column, value)
 
         assert evaluator.check(row, first_column)
 
