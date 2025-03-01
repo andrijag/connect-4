@@ -56,8 +56,9 @@ class View(ttk.Frame, Observer):
 
 
 class GridView(tk.Canvas):
-    def __init__(self, parent: tk.Misc, n_rows: int = 6, n_columns: int = 7) -> None:
-        cell_size = 50
+    def __init__(
+        self, parent: tk.Misc, n_rows: int = 6, n_columns: int = 7, cell_size: int = 50
+    ) -> None:
         canvas_width = n_columns * cell_size
         canvas_height = n_rows * cell_size
         super().__init__(
