@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from itertools import cycle
 
 
@@ -53,10 +54,10 @@ class Game(Subject):
         return self._evaluator.connect_n
 
     def drop(self, column: int) -> None:
-        if not self._legal_move(column):
+        if not self._is_legal_move(column):
             return
         row = self._player.drop(self.grid, column)
-        if self._winning_move(row, column):
+        if self._is_winning_move(row, column):
             self._end_game()
             self._add_score()
         elif self.grid.is_filled():
@@ -65,11 +66,11 @@ class Game(Subject):
             self._next_turn()
         self.notify_observers()
 
-    def _legal_move(self, column: int) -> bool:
+    def _is_legal_move(self, column: int) -> bool:
         top_row = 0
         return not self._game_over and not self.grid[top_row][column]
 
-    def _winning_move(self, row: int, column: int) -> bool:
+    def _is_winning_move(self, row: int, column: int) -> bool:
         return self._evaluator.check(row, column)
 
     def _end_game(self) -> None:
@@ -131,18 +132,12 @@ class Evaluator:
     def __init__(self, grid: Grid, connect_n: int = 4) -> None:
         self._grid = grid
         self.connect_n = connect_n
-        self._vectors = {
-            "horizontal": (0, 1),
-            "vertical": (1, 0),
-            "diagonal": (1, 1),
-            "anti-diagonal": (-1, 1),
-        }
 
     def check(self, row: int, column: int) -> bool:
         if not self._grid[row][column]:
             return False
-        for vector in self._vectors.values():
-            if self._count_consecutive(row, column, *vector) >= self.connect_n:
+        for vector in Vector:
+            if self._count_consecutive(row, column, *vector.value) >= self.connect_n:
                 return True
         return False
 
@@ -161,3 +156,10 @@ class Evaluator:
         ):
             return 1 + self._count_in_direction(next_row, next_column, x, y)
         return 1
+
+
+class Vector(Enum):
+    HORIZONTAL = (0, 1)
+    VERTICAL = (1, 0)
+    DIAGONAL = (1, 1)
+    ANTI_DIAGONAL = (-1, 1)
