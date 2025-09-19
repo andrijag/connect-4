@@ -35,10 +35,10 @@ class Game(Subject):
         super().__init__()
         self.players = [Player(id_) for id_ in range(1, n_players + 1)]
         self._iterator = cycle(self.players)
-        self._player = next(self._iterator)
+        self.player = next(self._iterator)
         self.grid = Grid(n_rows, n_columns)
         self._evaluator = Evaluator(self.grid, connect_n)
-        self._game_over = False
+        self.game_over = False
         self.winner = None
 
     @property
@@ -56,7 +56,7 @@ class Game(Subject):
     def drop(self, column: int) -> None:
         if not self._is_legal_move(column):
             return
-        row = self._player.drop(self.grid, column)
+        row = self.player.drop(self.grid, column)
         if self._is_winning_move(row, column):
             self._end_game()
             self._add_score()
@@ -68,27 +68,27 @@ class Game(Subject):
 
     def _is_legal_move(self, column: int) -> bool:
         top_row = 0
-        return not self._game_over and not self.grid[top_row][column]
+        return not self.game_over and not self.grid[top_row][column]
 
     def _is_winning_move(self, row: int, column: int) -> bool:
         return self._evaluator.check(row, column)
 
     def _end_game(self) -> None:
-        self._game_over = True
+        self.game_over = True
 
     def _add_score(self) -> None:
-        self.winner = self._player
+        self.winner = self.player
         self.winner.score += 1
 
     def _next_turn(self) -> None:
-        self._player = next(self._iterator)
+        self.player = next(self._iterator)
 
     def restart(self) -> None:
         self._iterator = cycle(self.players)
-        self._player = next(self._iterator)
+        self.player = next(self._iterator)
         self.grid = Grid(self.n_rows, self.n_columns)
         self._evaluator = Evaluator(self.grid, self.connect_n)
-        self._game_over = False
+        self.game_over = False
         self.winner = None
         self.notify_observers()
 
