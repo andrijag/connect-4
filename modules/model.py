@@ -38,7 +38,7 @@ class Game(Observable):
         self.player = next(self._iterator)
         self.grid = Grid(n_rows, n_columns)
         self._evaluator = Evaluator(self.grid, connect_n)
-        self.game_over = False
+        self.is_game_over = False
         self.winner = None
 
     @property
@@ -68,13 +68,13 @@ class Game(Observable):
 
     def _is_legal_move(self, column: int) -> bool:
         top_row = 0
-        return not self.game_over and not self.grid[top_row][column]
+        return not self.is_game_over and not self.grid[top_row][column]
 
     def _is_winning_move(self, row: int, column: int) -> bool:
         return self._evaluator.check(row, column)
 
     def _end_game(self) -> None:
-        self.game_over = True
+        self.is_game_over = True
 
     def _add_score(self) -> None:
         self.winner = self.player
@@ -88,7 +88,7 @@ class Game(Observable):
         self.player = next(self._iterator)
         self.grid = Grid(self.n_rows, self.n_columns)
         self._evaluator = Evaluator(self.grid, self.connect_n)
-        self.game_over = False
+        self.is_game_over = False
         self.winner = None
         self.notify_observers()
 
